@@ -122,8 +122,17 @@ def extract_fonts(filename, dest_dir):
         offset = file["folder_offset"].value
         size = file["filesize"].value
         file_path = Path(dest_dir) / filename
+        file_content = folder_data[offset:offset+size]
+
+        # temp workaround for https://github.com/vstinner/hachoir/issues/76
+        if filename == 'Verdanab.TTF':
+            file_content[0x56] = 0x0B
+            file_content[0x57] = 0x50
+        elif filename == 'Verdanai.TTF':
+            file_content[0x56] = 0x0B
+
         with file_path.open("wb") as out:
-            out.write(folder_data[offset:offset+size])
+            out.write(file_content)
 
 
 INIT_PY = """
